@@ -1,0 +1,8 @@
+{
+    "videoMaxWidth": 283,
+    "videoMaxDuration": 1000000000,
+    "destinationBucket": "cloudtranscode-dev/output",
+    "linkPrefix": "http://sportarchive.tv/",
+    "gzip": false
+}
+
