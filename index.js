@@ -22,7 +22,11 @@ function downloadStream(bucket, file, cb) {
 
     var req = s3.getObject({
 	Bucket: bucket,
-	Key: file
+	Key: file,
+	Range: "bytes=0-1000000"
+    }, function(err, data) {
+	if (err) console.log(err, err.stack); // an error occurred
+	else     console.log(data);           // successful response
     });
 
     req.on('error', function(res) {
@@ -61,47 +65,6 @@ function uploadFile(src, bucket, key, contentType, cb) {
     };
     
     s3upload(params, src, cb);
-
-    // var md5 = crypto.createHash('md5');
-    // var md5pass = new stream.PassThrough;
-    // var s3pass = new stream.PassThrough;
-
-    // readStream.pipe(md5pass);
-    // readStream.pipe(s3pass);
-
-    // md5pass
-    // 	.on('data', function(d) {
-    // 	    md5.update(d);
-    // 	    console.log("MD5 run");
-    // 	})
-    // 	.on('end', function() {
-
-    // 	    console.log("MD5 done");
-    // 	    console.log(src, 'md5', digest);
-	    
-    // 	    var digest = md5.digest();
-
-    // 	    if (config.gzip) {
-    // 		params.Metadata = {
-    // 		    'md5': digest.toString('base64')
-    // 		};
-
-    // 		params.ContentEncoding = 'gzip';
-
-    // 		params.Body = s3pass.pipe(
-    // 		    zlib.createGzip({
-    // 			level: zlib.Z_BEST_COMPRESSION
-    // 		    })
-    // 		);
-    // 	    }
-    // 	    else {
-    // 		params.Body = s3pass;
-    // 	    }
-	    
-    // 	    console.log("GOGO: "+src);
-    // 	    s3upload(params, src, cb);
-    // 	})
-    // ;
 }
 
 function verifyAsset(file, cb) {
@@ -126,7 +89,7 @@ function createThumb(file, cb) {
 	.screenshots({
 	    folder: "/tmp",
 	    filename: hash+".png",
-	    timemarks: ["50%"],
+	    timestamps: [1],
 	    size: "?x159"
 	})
 	.on('start', function(commandLine) {
@@ -145,34 +108,17 @@ function createThumb(file, cb) {
 	});
 }
 
-// function processVideo(file, cb) {
-//     var dlFile = '/tmp/'+file;
-
-//     async.series([
-// 	function(cb) {
-// 	    verifyAsset(file, cb);
-// 	},
-// 	function(cb) {
-// 	    createThumb(file, cb);
-// 	},
-// 	function(cb) {
-// 	    console.log('Deleting download file');
-// 	    fs.unlink(dlFile, cb);
-// 	}
-//     ], cb);
-// }
-
 exports.handler = function(event, context) {
     console.log("Reading options from event:\n", util.inspect(event, {depth: 5}));
     
     var s3Event = event.Records[0].s3;
     var srcBucket = event.Records[0].s3.bucket.name;
-    console.log("src bucket: "+srcBucket);
+    // console.log("src bucket: "+srcBucket);
     var srcKey = 
 	decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " ")); 
-    console.log("src key: "+srcKey);
+    // console.log("src key: "+srcKey);
     var prefix = srcKey.split('/');
-    console.log("prefix arr: "+prefix);
+    // console.log("prefix arr: "+prefix);
     var file = prefix.splice(prefix.length-1, 1)[0];
     prefix = prefix.join("/");
     console.log("prefix str: "+prefix);
@@ -190,11 +136,9 @@ exports.handler = function(event, context) {
 	    });
 	    dlStream.pipe(fs.createWriteStream("/tmp/"+file));
 	},
-	function (cb) { verifyAsset(file, cb); },
+	//function (cb) { verifyAsset(file, cb); },
 	function (cb) { createThumb(file, cb); },
 	function (cb) {
-	    //var dstBucket = config.destinationBucket;
-	    
 	    var dstBucket = srcBucket;
 	    async.parallel([
 	    	function (cb) { uploadFile("/tmp/"+hash+".png", dstBucket, prefix+"/"+hash+".png", 'image/png', cb); }

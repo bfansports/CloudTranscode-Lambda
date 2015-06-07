@@ -23,9 +23,9 @@ lambda({
                     arn: "arn:aws:s3:::sportarchive-dev-orgs"
 		},
 		object: {
-                    key: "TheMasters/videos/df32bc480c7ad56e66975270f1b64e0179025ffeaae63ac7880d6b2ca79be070/df32bc480c7ad56e66975270f1b64e0179025ffeaae63ac7880d6b2ca79be070.mp4",
-                    size: 20318159,
-                    eTag: "5f520f1d01a49ee5b8a2602a854cab60-4"
+                    key: "TheMog/videos/19c6977c83fa6c7263f65b56734536bf78b2e55ac5673bd6954b660465d1c147/19c6977c83fa6c7263f65b56734536bf78b2e55ac5673bd6954b660465d1c147.mkv",
+                    size: 748110865,
+                    eTag: "1457e3a2e0b3421ab9836edfd0ecc65f-143"
 		}
             }
 	}
