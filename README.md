@@ -1,3 +1,5 @@
+> This code works and create thumbnails using lambda. However for some reason sometime it fails on AWS but not locally. Some videos work though. Use Cloud Transcode !
+
 # Description
 An [AWS Lambda](http://aws.amazon.com/lambda/) function that resizes videos and outputs thumbnails using [FFmpeg](https://www.ffmpeg.org/).
 
